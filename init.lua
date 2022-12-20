@@ -140,6 +140,9 @@ vim.o.completeopt = 'menuone,noselect'
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+vim.keymap.set({'n'}, '<C-d>', '<C-d>zz')
+vim.keymap.set({'n'}, '<C-u>', '<C-u>zz')
+
 -- Keymaps for better default experience
 -- See `:help vim.keymap.set()`
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
@@ -164,7 +167,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 require('lualine').setup {
   options = {
     icons_enabled = false,
-    theme = 'oceanic_material',
+    theme = 'OceanicNext',
     component_separators = '|',
     section_separators = '',
   },
