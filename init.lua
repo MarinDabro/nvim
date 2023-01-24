@@ -60,6 +60,20 @@ require('packer').startup(function(use)
   -- Fuzzy Finder Algorithm which requires local dependencies to be built. Only load if `make` is available
   use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make', cond = vim.fn.executable 'make' == 1 }
 
+  use {
+  'nvim-tree/nvim-tree.lua',
+  requires = {
+    'nvim-tree/nvim-web-devicons', -- optional, for file icons
+  },
+  tag = 'nightly' -- optional, updated every week. (see issue #1193)
+}
+use {
+	"windwp/nvim-autopairs",
+    config = function() require("nvim-autopairs").setup {} end
+}
+use 'nvim-tree/nvim-web-devicons'
+use {'romgrk/barbar.nvim', wants = 'nvim-web-devicons'}
+
   -- Add custom plugins to packer from /nvim/lua/custom/plugins.lua
   local has_plugins, plugins = pcall(require, 'custom.plugins')
   if has_plugins then
@@ -92,26 +106,57 @@ vim.api.nvim_create_autocmd('BufWritePost', {
   pattern = vim.fn.expand '$MYVIMRC',
 })
 
+
+local map = vim.api.nvim_set_keymap
+local opts = { noremap = true, silent = true }
+
+-- Move to previous/next
+map('n', '<A-,>', '<Cmd>BufferPrevious<CR>', opts)
+map('n', '<A-.>', '<Cmd>BufferNext<CR>', opts)
+-- Re-order to previous/next
+map('n', '<A-<>', '<Cmd>BufferMovePrevious<CR>', opts)
+map('n', '<A->>', '<Cmd>BufferMoveNext<CR>', opts)
+-- Goto buffer in position...
+map('n', '<A-1>', '<Cmd>BufferGoto 1<CR>', opts)
+map('n', '<A-2>', '<Cmd>BufferGoto 2<CR>', opts)
+map('n', '<A-3>', '<Cmd>BufferGoto 3<CR>', opts)
+map('n', '<A-4>', '<Cmd>BufferGoto 4<CR>', opts)
+map('n', '<A-5>', '<Cmd>BufferGoto 5<CR>', opts)
+map('n', '<A-6>', '<Cmd>BufferGoto 6<CR>', opts)
+map('n', '<A-7>', '<Cmd>BufferGoto 7<CR>', opts)
+map('n', '<A-8>', '<Cmd>BufferGoto 8<CR>', opts)
+map('n', '<A-9>', '<Cmd>BufferGoto 9<CR>', opts)
+map('n', '<A-0>', '<Cmd>BufferLast<CR>', opts)
+-- Pin/unpin buffer
+map('n', '<A-p>', '<Cmd>BufferPin<CR>', opts)
+-- Close buffer
+map('n', '<A-c>', '<Cmd>BufferClose<CR>', opts)
+
 -- [[ Setting options ]]
 -- See `:help vim.o`
-
--- Set highlight on search
-vim.o.hlsearch = false
-
--- Make line numbers default
-vim.wo.number = true
-
--- Enable mouse mode
--- vim.o.mouse = 'a'
-
--- Enable break indent
-vim.o.breakindent = true
+vim.opt.showmatch = true      -- show matching 
+vim.opt.ignorecase = true     -- case insensitive 
+vim.opt.mouse = 'v'             -- middle-click paste with 
+vim.opt.hlsearch = true       -- highlight search 
+vim.opt.incsearch = true      -- incremental search
+vim.opt.tabstop = 2           -- number of columns occupied by a tab 
+vim.opt.softtabstop = 2       -- see multiple spaces as tabstops so <BS> does the right thing
+vim.opt.expandtab = true      -- converts tabs to white space
+vim.opt.shiftwidth = 2          -- width for autoindents
+vim.opt.autoindent = true     -- indent a new line the same amount as the line just typed
+vim.opt.number = true                  -- add line numbers
+vim.opt.relativenumber = true                  -- add line numbers
+vim.opt.wildmode = {'longest', 'list'} -- get bash-like tab completions
+vim.opt.cc = '100'                   -- set an 80 column border for good coding style
+vim.opt.mouse = 'n'             -- enable mouse click
+vim.opt.clipboard = 'unnamedplus'   -- using system clipboard
+vim.opt.cursorline = true       -- highlight current cursorline
+vim.opt.backupdir= '/tmp' -- Directory to store backup files.
+vim.opt.directory= '/tmp' -- Directory to store backup files.
 
 -- Save undo history
-vim.o.undofile = true
+vim.opt.undofile = true
 
--- Case insensitive searching UNLESS /C or capital in search
-vim.o.ignorecase = true
 vim.o.smartcase = true
 
 -- Decrease update time
@@ -120,10 +165,6 @@ vim.wo.signcolumn = 'yes'
 
 -- Set colorscheme
 vim.o.termguicolors = true
--- vim.g.oceanic_next_terminal_bold = 1
--- vim.g.oceanic_next_terminal_italic = 1
--- vim.cmd [[colorscheme OceanicNext]]
--- vim.cmd [[colorscheme happy_hacking]]
   vim.g.oceanic_material_allow_bold = 1
   vim.g.oceanic_material_allow_italic = 1
   vim.g.oceanic_material_background = 'medium'
@@ -141,7 +182,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 vim.keymap.set({'n'}, '<C-d>', '<C-d>zz')
-vim.keymap.set({'n'}, '<C-u>', '<C-u>zz')
+vim.keymap.set({'n'}, '<C-f>', '<C-u>zz')
 
 -- Keymaps for better default experience
 -- See `:help vim.keymap.set()`
@@ -161,6 +202,16 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   group = highlight_group,
   pattern = '*',
 })
+
+vim.opt.list = true
+vim.opt.listchars:append "space:⋅"
+vim.opt.listchars:append "eol:↴"
+
+require("indent_blankline").setup {
+    space_char_blankline = " ",
+    show_current_context = true,
+    show_current_context_start = true,
+}
 
 -- Set lualine as statusline
 -- See `:help lualine.txt`
@@ -195,6 +246,27 @@ require('gitsigns').setup {
   },
 }
 
+require("nvim-tree").setup({
+  sort_by = "case_sensitive",
+  view = {
+    adaptive_size = true,
+    mappings = {
+      list = {
+        { key = "u", action = "dir_up" },
+      },
+    },
+  },
+  renderer = {
+    group_empty = true,
+  },
+  filters = {
+    dotfiles = true,
+  },
+})
+
+vim.keymap.set('n', '<leader>e', [[:NvimTreeToggle <CR>]])
+vim.keymap.set('n', '<leader>a', [[:NvimTreeFocus <CR>]])
+
 -- [[ Configure Telescope ]]
 -- See `:help telescope` and `:help telescope.setup()`
 require('telescope').setup {
@@ -213,8 +285,8 @@ pcall(require('telescope').load_extension, 'fzf')
 
 -- See `:help telescope.builtin`
 vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
-vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
-vim.keymap.set('n', '<leader>/', function()
+vim.keymap.set('n', '<leader>b', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
+vim.keymap.set('n', '<leader><space>', function()
   -- You can pass additional configuration to telescope to change theme, layout, etc.
   require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
     winblend = 10,
@@ -232,7 +304,7 @@ vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { de
 -- See `:help nvim-treesitter`
 require('nvim-treesitter.configs').setup {
   -- Add languages to be installed here that you want installed for treesitter
-  ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'typescript', 'help' },
+  ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'typescript', 'css', 'help' },
 
   highlight = { enable = true },
   indent = { enable = true },
@@ -294,7 +366,7 @@ require('nvim-treesitter.configs').setup {
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
-vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
+vim.keymap.set('n', '<leader>d', vim.diagnostic.open_float)
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist)
 
 -- LSP settings.
@@ -314,12 +386,16 @@ local on_attach = function(_, bufnr)
     vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
   end
 
+  vim.keymap.set({'i', 'v'}, 'jk', '<ESC>')
+  vim.keymap.set({'i', 'v'}, 'kj', '<ESC>')
+  nmap('<leader>rl', [[:set relativenumber! <CR>]])
+
   nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
   nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
 
   nmap('gd', vim.lsp.buf.definition, '[G]oto [D]efinition')
   nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-  nmap('gI', vim.lsp.buf.implementation, '[G]oto [I]mplementation')
+  nmap('gi', vim.lsp.buf.implementation, '[G]oto [I]mplementation')
   nmap('<leader>D', vim.lsp.buf.type_definition, 'Type [D]efinition')
   nmap('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
   nmap('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
@@ -351,7 +427,7 @@ require('mason').setup()
 
 -- Enable the following language servers
 -- Feel free to add/remove any LSPs that you want here. They will automatically be installed
-local servers = { 'clangd', 'rust_analyzer', 'pyright', 'tsserver', 'sumneko_lua'}
+local servers = { 'clangd', 'rust_analyzer', 'pyright', 'tsserver', 'sumneko_lua', 'cssls'}
 
 -- Ensure the servers above are installed
 require('mason-lspconfig').setup {
