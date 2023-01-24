@@ -211,6 +211,11 @@ _G.packer_plugins = {
     path = "/home/marin/.local/share/nvim/site/pack/packer/start/telescope.nvim",
     url = "https://github.com/nvim-telescope/telescope.nvim"
   },
+  ["vim-easy-replace"] = {
+    loaded = true,
+    path = "/home/marin/.local/share/nvim/site/pack/packer/start/vim-easy-replace",
+    url = "https://github.com/kqito/vim-easy-replace"
+  },
   ["vim-fugitive"] = {
     loaded = true,
     path = "/home/marin/.local/share/nvim/site/pack/packer/start/vim-fugitive",

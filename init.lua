@@ -44,6 +44,7 @@ require('packer').startup(function(use)
   use 'tpope/vim-fugitive'
   use 'tpope/vim-rhubarb'
   use 'lewis6991/gitsigns.nvim'
+  use 'kqito/vim-easy-replace'
 
   use 'glepnir/oceanic-material'
   use 'yorickpeterse/happy_hacking.vim'
@@ -132,6 +133,9 @@ map('n', '<A-p>', '<Cmd>BufferPin<CR>', opts)
 -- Close buffer
 map('n', '<A-c>', '<Cmd>BufferClose<CR>', opts)
 
+
+vim.g.easy_replace_highlight_ctermbg = 'cyan'
+vim.g.easy_replace_highlight_guibg = 'cyan'
 -- [[ Setting options ]]
 -- See `:help vim.o`
 vim.opt.showmatch = true      -- show matching 
