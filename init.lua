@@ -267,6 +267,7 @@ require("nvim-tree").setup({
 
 vim.keymap.set('n', '<leader>e', [[:NvimTreeToggle <CR>]])
 vim.keymap.set('n', '<leader>a', [[:NvimTreeFocus <CR>]])
+vim.keymap.set('n', '<leader>x', [[:terminal <CR> i]])
 
 -- [[ Configure Telescope ]]
 -- See `:help telescope` and `:help telescope.setup()`
